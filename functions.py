@@ -1,11 +1,14 @@
-from math import *
 from tkinter import messagebox
 
-class F():
+class F:
     def __init__(self, ui):
         self.ui = ui
         self.yournumber=['']
         self.currnumber=0
+        self.op=['div', 'mul', 'add', 'min']
+        self.result=0
+        self.eq=False
+        self.yournumberdisplay=''
 
     def test(self):
         messagebox.showinfo("huh", 'get your ass outta here im still testing yk')
@@ -21,6 +24,12 @@ class F():
         self.ui.b7['command'] = lambda:self.addup(7)
         self.ui.b8['command'] = lambda:self.addup(8)
         self.ui.b9['command'] = lambda:self.addup(9)
+        self.ui.A['command'] = lambda:self.addup('A')
+        self.ui.B['command'] = lambda:self.addup('B')
+        self.ui.C['command'] = lambda:self.addup('C')
+        self.ui.D['command'] = lambda:self.addup('D')
+        self.ui.E['command'] = lambda:self.addup('E')
+        self.ui.F['command'] = lambda:self.addup('F')
         self.ui.BracketO['command'] = self.test
         self.ui.BracketC['command'] = self.test
         self.ui.Division['command'] = self.dv
@@ -28,6 +37,7 @@ class F():
         self.ui.Minus['command'] = self.min
         self.ui.Plus['command'] = self.plus
         self.ui.Equal['command'] = self.equal
+        self.ui.Float['command'] = self.floatf
         self.ui.b0['text'] = '0'
         self.ui.BracketO['text'] = '('
         self.ui.BracketC['text'] = ')'
@@ -61,23 +71,95 @@ class F():
         self.ui.Equal['state'] = 'normal'
         self.ui.AC['state'] = 'normal'
         self.ui.Backspace['state'] = 'normal'
+        self.ui.Float['state'] = 'normal'
 
     def addup(self, numb):
+        if self.eq:
+            self.yournumber=['']
+            self.currnumber=0
+            self.result=0
+            self.eq=False
+
         self.yournumber[self.currnumber]+=str(numb)
     def changesystems(self):
         self.ButtonFunction()
+
     def dv(self):
-        self.nextnum()
+        self.nextnum('div')
+
     def tm(self):
-        self.nextnum()
+        self.nextnum('mul')
+
     def min(self):
-        self.nextnum()
-    def equal(self):
-        self.test()
+        self.nextnum('min')
+
     def plus(self):
-        self.nextnum()
+        self.nextnum('add')
+
+    def equal(self):
+        tempnum=[0]
+        c=0
+        chk=[]
+        for i in self.yournumber:
+            if i not in self.op:
+                tempnum[c]+=float(i)
+            else:
+                if i=='div':
+                    chk.append(5)
+                    tempnum.append(0)
+                    c+=1
+                if i=='min':
+                    chk.append(1)
+                    tempnum.append(0)
+                    c+=1
+                if i=='add':
+                    chk.append(2)
+                    tempnum.append(0)
+                    c+=1
+                if i=='mul':
+                    chk.append(4)
+                    tempnum.append(0)
+                    c+=1
+        self.result=tempnum[0]
+        for i in range(len(tempnum)-1):
+            if chk[i]==5:
+                self.result/=tempnum[i+1]
+            if chk[i]==1:
+                self.result-=tempnum[i+1]
+            if chk[i]==2:
+                self.result+=tempnum[i+1]
+            if chk[i]==4:
+                self.result*=tempnum[i+1]
+        self.eq=True
+        self.displayassistant()
+        #self.result=0
+
+    def displayassistant(self):
+        self.yournumberdisplay=''
+        for i in self.yournumber:
+            if i not in self.op:
+                self.yournumberdisplay+=i
+            if i=='div':
+                self.yournumberdisplay+=' / '
+            if i=='min':
+                self.yournumberdisplay+=' - '
+            if i=='add':
+                self.yournumberdisplay+=' + '
+            if i=='mul':
+                self.yournumberdisplay+=' * '
+        if self.result==int(self.result):
+            self.result=int(self.result)
+
     def ac(self):
-        self.yournumber=''
-    def nextnum(self):
+        self.yournumber=['']
+        self.result=0
+        self.currnumber=0
+        self.eq=False
+
+    def nextnum(self, operation):
+        self.yournumber.append(operation)
         self.yournumber.append('')
-        self.currnumber+=1
+        self.currnumber+=2
+
+    def floatf(self):
+        self.addup('.')
